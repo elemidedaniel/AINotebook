@@ -682,7 +682,7 @@ const AddBlockButton = ({ onClick, label, icon }) => (
 );
 
 // ============================================================================
-// BLOCK COMPONENTS
+// BLOCK COMPONENTS - FIXED DELETE BUTTONS
 // ============================================================================
 
 const TextBlockComponent = ({ block, updateBlock, deleteBlock }) => {
@@ -694,6 +694,11 @@ const TextBlockComponent = ({ block, updateBlock, deleteBlock }) => {
       textareaRef.current.focus();
     }
   }, [isEditing]);
+
+  const handleDelete = (e) => {
+    e.stopPropagation();
+    deleteBlock(block.id);
+  };
 
   if (isEditing) {
     return (
@@ -707,8 +712,9 @@ const TextBlockComponent = ({ block, updateBlock, deleteBlock }) => {
           style={{ minHeight: '180px' }}
         />
         <button
-          onClick={() => deleteBlock(block.id)}
-          className="absolute top-3 right-3 p-2 rounded hover:bg-red-100 text-red-600 transition-colors"
+          type="button"
+          onClick={handleDelete}
+          className="absolute top-3 right-3 p-2 rounded hover:bg-red-100 text-red-600 transition-colors z-10 cursor-pointer"
         >
           <Trash2 size={16} />
         </button>
@@ -719,13 +725,20 @@ const TextBlockComponent = ({ block, updateBlock, deleteBlock }) => {
   return (
     <div
       onClick={() => setIsEditing(true)}
-      className="cursor-text p-4 min-h-10 rounded-lg transition-colors text-gray-900 hover:bg-gray-50"
+      className="cursor-text p-4 min-h-10 rounded-lg transition-colors text-gray-900 hover:bg-gray-50 relative group"
     >
       {block.content ? (
         <p className="text-base leading-relaxed whitespace-pre-wrap break-words text-gray-800">{block.content}</p>
       ) : (
         <p className="text-base text-gray-400 italic">Click to write...</p>
       )}
+      <button
+        type="button"
+        onClick={handleDelete}
+        className="absolute top-2 right-2 p-2 rounded opacity-0 group-hover:opacity-100 hover:bg-red-100 text-red-600 transition-all cursor-pointer"
+      >
+        <Trash2 size={16} />
+      </button>
     </div>
   );
 };
@@ -740,6 +753,11 @@ const HeadingBlockComponent = ({ block, updateBlock, deleteBlock }) => {
     }
   }, [isEditing]);
 
+  const handleDelete = (e) => {
+    e.stopPropagation();
+    deleteBlock(block.id);
+  };
+
   if (isEditing) {
     return (
       <div className="relative">
@@ -752,8 +770,9 @@ const HeadingBlockComponent = ({ block, updateBlock, deleteBlock }) => {
           className="w-full px-4 py-3 text-2xl font-bold rounded-lg focus:outline-none border-2 border-blue-300 bg-blue-50"
         />
         <button
-          onClick={() => deleteBlock(block.id)}
-          className="absolute top-3 right-3 p-2 rounded hover:bg-red-100 text-red-600 transition-colors"
+          type="button"
+          onClick={handleDelete}
+          className="absolute top-3 right-3 p-2 rounded hover:bg-red-100 text-red-600 transition-colors z-10 cursor-pointer"
         >
           <Trash2 size={16} />
         </button>
@@ -764,9 +783,16 @@ const HeadingBlockComponent = ({ block, updateBlock, deleteBlock }) => {
   return (
     <h2
       onClick={() => setIsEditing(true)}
-      className="text-3xl font-bold p-4 rounded-lg cursor-text transition-colors text-gray-900 hover:bg-gray-50"
+      className="text-3xl font-bold p-4 rounded-lg cursor-text transition-colors text-gray-900 hover:bg-gray-50 relative group"
     >
       {block.content || 'Heading...'}
+      <button
+        type="button"
+        onClick={handleDelete}
+        className="absolute top-2 right-2 p-2 rounded opacity-0 group-hover:opacity-100 hover:bg-red-100 text-red-600 transition-all cursor-pointer"
+      >
+        <Trash2 size={16} />
+      </button>
     </h2>
   );
 };
@@ -781,6 +807,11 @@ const QuoteBlockComponent = ({ block, updateBlock, deleteBlock }) => {
     }
   }, [isEditing]);
 
+  const handleDelete = (e) => {
+    e.stopPropagation();
+    deleteBlock(block.id);
+  };
+
   if (isEditing) {
     return (
       <div className="relative p-5 border-l-4 border-blue-500 rounded-lg bg-blue-50">
@@ -793,8 +824,9 @@ const QuoteBlockComponent = ({ block, updateBlock, deleteBlock }) => {
           style={{ minHeight: '120px' }}
         />
         <button
-          onClick={() => deleteBlock(block.id)}
-          className="absolute top-3 right-3 p-2 rounded hover:bg-red-100 text-red-600 transition-colors"
+          type="button"
+          onClick={handleDelete}
+          className="absolute top-3 right-3 p-2 rounded hover:bg-red-100 text-red-600 transition-colors z-10 cursor-pointer"
         >
           <Trash2 size={16} />
         </button>
@@ -805,9 +837,16 @@ const QuoteBlockComponent = ({ block, updateBlock, deleteBlock }) => {
   return (
     <blockquote
       onClick={() => setIsEditing(true)}
-      className="p-5 border-l-4 border-blue-500 rounded-lg cursor-text transition-all italic bg-blue-50 hover:bg-blue-100 text-gray-800"
+      className="p-5 border-l-4 border-blue-500 rounded-lg cursor-text transition-all italic bg-blue-50 hover:bg-blue-100 text-gray-800 relative group"
     >
       {block.content || 'Add a quote...'}
+      <button
+        type="button"
+        onClick={handleDelete}
+        className="absolute top-2 right-2 p-2 rounded opacity-0 group-hover:opacity-100 hover:bg-red-100 text-red-600 transition-all cursor-pointer"
+      >
+        <Trash2 size={16} />
+      </button>
     </blockquote>
   );
 };
@@ -834,14 +873,9 @@ const CodeBlockComponent = ({ block, updateBlock, deleteBlock }) => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Simple syntax highlighting
-  const highlightCode = (code, lang) => {
-    if (lang === 'json') {
-      return code
-        .replace(/(".*?":\s*)/g, '<span style="color: #61afef">$1</span>')
-        .replace(/:\s*(".*?")/g, ': <span style="color: #98c379">$1</span>');
-    }
-    return code;
+  const handleDelete = (e) => {
+    e.stopPropagation();
+    deleteBlock(block.id);
   };
 
   return (
@@ -863,16 +897,18 @@ const CodeBlockComponent = ({ block, updateBlock, deleteBlock }) => {
 
         <div className="flex items-center gap-1">
           <button
+            type="button"
             onClick={() => setExpanded(!expanded)}
-            className="p-1.5 rounded transition-colors hover:bg-gray-700 text-gray-400"
+            className="p-1.5 rounded transition-colors hover:bg-gray-700 text-gray-400 cursor-pointer"
             title={expanded ? 'Collapse' : 'Expand'}
           >
             {expanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
           </button>
 
           <button
+            type="button"
             onClick={copyCode}
-            className="p-1.5 rounded transition-colors hover:bg-gray-700 text-gray-400 flex items-center gap-1"
+            className="p-1.5 rounded transition-colors hover:bg-gray-700 text-gray-400 flex items-center gap-1 cursor-pointer"
             title="Copy code"
           >
             {copied ? (
@@ -886,8 +922,9 @@ const CodeBlockComponent = ({ block, updateBlock, deleteBlock }) => {
           </button>
 
           <button
-            onClick={() => deleteBlock(block.id)}
-            className="p-1.5 rounded transition-colors hover:bg-red-900/30 text-red-400"
+            type="button"
+            onClick={handleDelete}
+            className="p-1.5 rounded transition-colors hover:bg-red-900/30 text-red-400 cursor-pointer"
             title="Delete block"
           >
             <Trash2 size={16} />
@@ -897,21 +934,20 @@ const CodeBlockComponent = ({ block, updateBlock, deleteBlock }) => {
 
       {/* Code Editor */}
       {expanded && (
-        <div className="relative">
+        <div className="relative overflow-x-auto overflow-y-hidden">
           <textarea
             ref={textareaRef}
             value={block.content}
             onChange={(e) => updateBlock(block.id, e.target.value, language)}
             className="w-full p-5 bg-gray-900 text-gray-100 font-mono text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset"
-            style={{ minHeight: '300px' }}
+            style={{ 
+              minHeight: '300px', 
+              whiteSpace: 'pre',
+              overflowWrap: 'normal',
+              wordWrap: 'normal'
+            }}
             spellCheck="false"
           />
-          {/* Code line numbers and styling */}
-          <div className="absolute top-0 left-0 right-0 bottom-0 pointer-events-none px-5 py-5 font-mono text-sm text-gray-600 whitespace-pre overflow-hidden">
-            {block.content.split('\n').map((_, idx) => (
-              <div key={idx}>{idx + 1}</div>
-            ))}
-          </div>
         </div>
       )}
     </div>
